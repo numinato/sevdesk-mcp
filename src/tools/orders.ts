@@ -43,7 +43,7 @@ export const listOrdersSchema = {
  * Get order schema
  */
 export const getOrderSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk order ID"),
 };
 
 /**
@@ -82,7 +82,7 @@ export const createOrderSchema = {
  * Update order schema
  */
 export const updateOrderSchema = {
-  id: z.string().describe("The sevdesk order ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk order ID to update"),
   header: z.string().optional().describe("Order header/title"),
   headText: z.string().optional().describe("Text before positions"),
   footText: z.string().optional().describe("Text after positions"),
@@ -94,14 +94,14 @@ export const updateOrderSchema = {
  * Delete order schema
  */
 export const deleteOrderSchema = {
-  id: z.string().describe("The sevdesk order ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk order ID to delete"),
 };
 
 /**
  * Get order PDF schema
  */
 export const getOrderPdfSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk order ID"),
   download: z.boolean().optional().describe("Set to true to get download-ready content"),
 };
 
@@ -109,7 +109,7 @@ export const getOrderPdfSchema = {
  * Send order via email schema
  */
 export const sendOrderEmailSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk order ID"),
   email: z.string().describe("Recipient email address"),
   subject: z.string().describe("Email subject"),
   text: z.string().describe("Email body text"),
@@ -120,7 +120,7 @@ export const sendOrderEmailSchema = {
  * Change order status schema
  */
 export const changeOrderStatusSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk order ID"),
   status: z.number().describe("New status: 100 (created), 200 (sent), 300 (accepted), 500 (rejected)"),
 };
 
@@ -137,7 +137,7 @@ export const listOrderPositionsSchema = {
  * Get order position schema
  */
 export const getOrderPositionSchema = {
-  id: z.string().describe("The order position ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The order position ID"),
 };
 
 /**
@@ -159,7 +159,7 @@ export const createOrderPositionSchema = {
  * Update order position schema
  */
 export const updateOrderPositionSchema = {
-  id: z.string().describe("The order position ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The order position ID to update"),
   quantity: z.number().optional().describe("Quantity"),
   price: z.number().optional().describe("Unit price (net)"),
   name: z.string().optional().describe("Position name/description"),
@@ -172,7 +172,7 @@ export const updateOrderPositionSchema = {
  * Delete order position schema
  */
 export const deleteOrderPositionSchema = {
-  id: z.string().describe("The order position ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The order position ID to delete"),
 };
 
 // ============================================================================

@@ -25,7 +25,7 @@ export const listVouchersSchema = {
  * Get voucher schema
  */
 export const getVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk voucher ID"),
 };
 
 /**
@@ -213,7 +213,7 @@ export const createVoucherSchema = {
  * Update voucher schema
  */
 export const updateVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk voucher ID to update"),
   description: z.string().optional().describe("Voucher description"),
   paymentDeadline: z.string().optional().describe("Payment deadline (YYYY-MM-DD)"),
   deliveryDate: z.string().optional().describe("Delivery date (YYYY-MM-DD)"),
@@ -224,14 +224,14 @@ export const updateVoucherSchema = {
  * Delete voucher schema
  */
 export const deleteVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk voucher ID to delete"),
 };
 
 /**
  * Book voucher payment schema
  */
 export const bookVoucherPaymentSchema = {
-  id: z.string().describe("The sevdesk voucher ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk voucher ID"),
   amount: z.number().describe("Payment amount"),
   date: z.string().optional().describe("Payment date (YYYY-MM-DD)"),
   checkAccountId: z.string().optional().describe("Bank account ID for the payment"),
@@ -243,7 +243,7 @@ export const bookVoucherPaymentSchema = {
  * Enshrine voucher schema
  */
 export const enshrineVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID to enshrine (finalize)"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk voucher ID to enshrine (finalize)"),
 };
 
 /**
@@ -259,7 +259,7 @@ export const listVoucherPositionsSchema = {
  * Get voucher position schema
  */
 export const getVoucherPositionSchema = {
-  id: z.string().describe("The voucher position ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The voucher position ID"),
 };
 
 /**
@@ -279,7 +279,7 @@ export const createVoucherPositionSchema = {
  * Update voucher position schema
  */
 export const updateVoucherPositionSchema = {
-  id: z.string().describe("The voucher position ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The voucher position ID to update"),
   sum: z.number().optional().describe("Position amount"),
   taxRate: z.number().optional().describe("Tax rate percentage"),
   comment: z.string().optional().describe("Position comment"),
@@ -289,7 +289,7 @@ export const updateVoucherPositionSchema = {
  * Delete voucher position schema
  */
 export const deleteVoucherPositionSchema = {
-  id: z.string().describe("The voucher position ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The voucher position ID to delete"),
 };
 
 /**

@@ -22,7 +22,7 @@ export const listContactsSchema = {
  * Get contact schema
  */
 export const getContactSchema = {
-  id: z.string().describe("The sevdesk contact ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk contact ID"),
 };
 
 /**
@@ -139,7 +139,7 @@ export const createContactSchema = {
  * Update contact schema
  */
 export const updateContactSchema = {
-  id: z.string().describe("The sevdesk contact ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk contact ID to update"),
   name: z.string().optional().describe("Company name (for organizations)"),
   surename: z.string().optional().describe("First name (for individuals)"),
   familyname: z.string().optional().describe("Last name (for individuals)"),
@@ -160,7 +160,7 @@ export const updateContactSchema = {
  * Delete contact schema
  */
 export const deleteContactSchema = {
-  id: z.string().describe("The sevdesk contact ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk contact ID to delete"),
 };
 
 /**

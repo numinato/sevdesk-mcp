@@ -24,7 +24,7 @@ export const listTagsSchema = {
  * Get tag schema
  */
 export const getTagSchema = {
-  id: z.string().describe("The sevdesk tag ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk tag ID"),
 };
 
 /**
@@ -38,7 +38,7 @@ export const createTagSchema = {
  * Update tag schema
  */
 export const updateTagSchema = {
-  id: z.string().describe("The sevdesk tag ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk tag ID to update"),
   name: z.string().describe("New tag name"),
 };
 
@@ -46,7 +46,7 @@ export const updateTagSchema = {
  * Delete tag schema
  */
 export const deleteTagSchema = {
-  id: z.string().describe("The sevdesk tag ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk tag ID to delete"),
 };
 
 /**
@@ -73,7 +73,7 @@ export const addTagToObjectSchema = {
  * Remove tag from object schema
  */
 export const removeTagFromObjectSchema = {
-  id: z.string().describe("The tag relation ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The tag relation ID to delete"),
 };
 
 // ============================================================================

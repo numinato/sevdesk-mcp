@@ -24,7 +24,7 @@ export const listContactAddressesSchema = {
  * Get contact address schema
  */
 export const getContactAddressSchema = {
-  id: z.string().describe("The sevdesk contact address ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk contact address ID"),
 };
 
 /**
@@ -47,7 +47,7 @@ export const createContactAddressSchema = {
  * Update contact address schema
  */
 export const updateContactAddressSchema = {
-  id: z.string().describe("The sevdesk contact address ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk contact address ID to update"),
   street: z.string().optional().describe("Street address"),
   zip: z.string().optional().describe("ZIP/postal code"),
   city: z.string().optional().describe("City"),
@@ -62,7 +62,7 @@ export const updateContactAddressSchema = {
  * Delete contact address schema
  */
 export const deleteContactAddressSchema = {
-  id: z.string().describe("The sevdesk contact address ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk contact address ID to delete"),
 };
 
 // ============================================================================

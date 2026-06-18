@@ -39,7 +39,7 @@ export const listInvoicesSchema = {
  * Get invoice schema
  */
 export const getInvoiceSchema = {
-  id: z.string().describe("The sevdesk invoice ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
 };
 
 /**
@@ -241,7 +241,7 @@ export const createRecurringInvoiceSchema = {
  * Update invoice schema
  */
 export const updateInvoiceSchema = {
-  id: z.string().describe("The sevdesk invoice ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to update"),
   header: z.string().optional().describe("Invoice header/title"),
   headText: z.string().optional().describe("Text before positions"),
   footText: z.string().optional().describe("Text after positions"),
@@ -255,14 +255,14 @@ export const updateInvoiceSchema = {
  * Delete invoice schema
  */
 export const deleteInvoiceSchema = {
-  id: z.string().describe("The sevdesk invoice ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to delete"),
 };
 
 /**
  * Get invoice PDF schema
  */
 export const getInvoicePdfSchema = {
-  id: z.string().describe("The sevdesk invoice ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
   download: z.boolean().optional().describe("Set to true to get download-ready content"),
 };
 
@@ -270,7 +270,7 @@ export const getInvoicePdfSchema = {
  * Send invoice via email schema
  */
 export const sendInvoiceEmailSchema = {
-  id: z.string().describe("The sevdesk invoice ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
   email: z.string().describe("Recipient email address"),
   subject: z.string().describe("Email subject"),
   text: z.string().describe("Email body text"),
@@ -282,21 +282,21 @@ export const sendInvoiceEmailSchema = {
  * Reset invoice to draft schema (v2.0)
  */
 export const resetInvoiceToDraftSchema = {
-  id: z.string().describe("The sevdesk invoice ID to reset to draft status (100)"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to reset to draft status (100)"),
 };
 
 /**
  * Reset invoice to open schema (v2.0)
  */
 export const resetInvoiceToOpenSchema = {
-  id: z.string().describe("The sevdesk invoice ID to reset to open status (200)"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to reset to open status (200)"),
 };
 
 /**
  * Mark invoice as sent schema (v2.0 — transitions draft→open)
  */
 export const markInvoiceSentSchema = {
-  id: z.string().describe("The sevdesk invoice ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
   sendType: z.string().optional().describe("Send type: VPR (print), VM (mail), VP (post), VPDF (pdf). Default: VPDF"),
   sendDraft: z.boolean().optional().describe("Set to true to mark as sent without actually sending"),
 };
@@ -305,14 +305,14 @@ export const markInvoiceSentSchema = {
  * Enshrine (finalize) invoice schema
  */
 export const enshrineInvoiceSchema = {
-  id: z.string().describe("The sevdesk invoice ID to enshrine (finalize)"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to enshrine (finalize)"),
 };
 
 /**
  * Book invoice payment schema
  */
 export const bookInvoicePaymentSchema = {
-  id: z.string().describe("The sevdesk invoice ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
   amount: z.number().describe("Payment amount"),
   date: z.string().optional().describe("Payment date (YYYY-MM-DD)"),
   checkAccountId: z.string().optional().describe("Bank account ID for the payment"),
@@ -333,7 +333,7 @@ export const listInvoicePositionsSchema = {
  * Get invoice position schema
  */
 export const getInvoicePositionSchema = {
-  id: z.string().describe("The invoice position ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The invoice position ID"),
 };
 
 /**
@@ -356,7 +356,7 @@ export const createInvoicePositionSchema = {
  * Update invoice position schema
  */
 export const updateInvoicePositionSchema = {
-  id: z.string().describe("The invoice position ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The invoice position ID to update"),
   quantity: z.number().optional().describe("Quantity"),
   price: z.number().optional().describe("Unit price (net)"),
   name: z.string().optional().describe("Position name/description"),
@@ -369,7 +369,7 @@ export const updateInvoicePositionSchema = {
  * Delete invoice position schema
  */
 export const deleteInvoicePositionSchema = {
-  id: z.string().describe("The invoice position ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The invoice position ID to delete"),
 };
 
 /**

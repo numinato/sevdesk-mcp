@@ -43,7 +43,7 @@ export const listCreditNotesSchema = {
  * Get credit note schema
  */
 export const getCreditNoteSchema = {
-  id: z.string().describe("The sevdesk credit note ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk credit note ID"),
 };
 
 /**
@@ -81,7 +81,7 @@ export const createCreditNoteSchema = {
  * Update credit note schema
  */
 export const updateCreditNoteSchema = {
-  id: z.string().describe("The sevdesk credit note ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk credit note ID to update"),
   header: z.string().optional().describe("Credit note header/title"),
   headText: z.string().optional().describe("Text before positions"),
   footText: z.string().optional().describe("Text after positions"),
@@ -92,14 +92,14 @@ export const updateCreditNoteSchema = {
  * Delete credit note schema
  */
 export const deleteCreditNoteSchema = {
-  id: z.string().describe("The sevdesk credit note ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk credit note ID to delete"),
 };
 
 /**
  * Get credit note PDF schema
  */
 export const getCreditNotePdfSchema = {
-  id: z.string().describe("The sevdesk credit note ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk credit note ID"),
   download: z.boolean().optional().describe("Set to true to get download-ready content"),
 };
 
@@ -107,21 +107,21 @@ export const getCreditNotePdfSchema = {
  * Reset credit note to draft schema (v2.0)
  */
 export const resetCreditNoteToDraftSchema = {
-  id: z.string().describe("The sevdesk credit note ID to reset to draft status (100)"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk credit note ID to reset to draft status (100)"),
 };
 
 /**
  * Reset credit note to open schema (v2.0)
  */
 export const resetCreditNoteToOpenSchema = {
-  id: z.string().describe("The sevdesk credit note ID to reset to open status (200)"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk credit note ID to reset to open status (200)"),
 };
 
 /**
  * Send credit note via email schema
  */
 export const sendCreditNoteEmailSchema = {
-  id: z.string().describe("The sevdesk credit note ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk credit note ID"),
   email: z.string().describe("Recipient email address"),
   subject: z.string().describe("Email subject"),
   text: z.string().describe("Email body text"),
@@ -141,7 +141,7 @@ export const listCreditNotePositionsSchema = {
  * Get credit note position schema
  */
 export const getCreditNotePositionSchema = {
-  id: z.string().describe("The credit note position ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The credit note position ID"),
 };
 
 /**
@@ -163,7 +163,7 @@ export const createCreditNotePositionSchema = {
  * Update credit note position schema
  */
 export const updateCreditNotePositionSchema = {
-  id: z.string().describe("The credit note position ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The credit note position ID to update"),
   quantity: z.number().optional().describe("Quantity"),
   price: z.number().optional().describe("Unit price (net)"),
   name: z.string().optional().describe("Position name/description"),
@@ -176,7 +176,7 @@ export const updateCreditNotePositionSchema = {
  * Delete credit note position schema
  */
 export const deleteCreditNotePositionSchema = {
-  id: z.string().describe("The credit note position ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The credit note position ID to delete"),
 };
 
 // ============================================================================

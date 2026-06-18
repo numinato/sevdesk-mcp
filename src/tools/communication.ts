@@ -25,7 +25,7 @@ export const listCommunicationWaysSchema = {
  * Get communication way schema
  */
 export const getCommunicationWaySchema = {
-  id: z.string().describe("The sevdesk communication way ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk communication way ID"),
 };
 
 /**
@@ -43,7 +43,7 @@ export const createCommunicationWaySchema = {
  * Update communication way schema
  */
 export const updateCommunicationWaySchema = {
-  id: z.string().describe("The sevdesk communication way ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk communication way ID to update"),
   value: z.string().optional().describe("The value (email address, phone number, URL, etc.)"),
   main: z.boolean().optional().describe("Set as main/primary communication way"),
 };
@@ -52,7 +52,7 @@ export const updateCommunicationWaySchema = {
  * Delete communication way schema
  */
 export const deleteCommunicationWaySchema = {
-  id: z.string().describe("The sevdesk communication way ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk communication way ID to delete"),
 };
 
 // ============================================================================

@@ -26,7 +26,7 @@ export const listPartsSchema = {
  * Get part schema
  */
 export const getPartSchema = {
-  id: z.string().describe("The sevdesk part ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID"),
 };
 
 /**
@@ -51,7 +51,7 @@ export const createPartSchema = {
  * Update part schema
  */
 export const updatePartSchema = {
-  id: z.string().describe("The sevdesk part ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID to update"),
   name: z.string().optional().describe("Part name"),
   partNumber: z.string().optional().describe("Part number"),
   text: z.string().optional().describe("Description text"),
@@ -69,14 +69,14 @@ export const updatePartSchema = {
  * Delete part schema
  */
 export const deletePartSchema = {
-  id: z.string().describe("The sevdesk part ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID to delete"),
 };
 
 /**
  * Get part stock schema
  */
 export const getPartStockSchema = {
-  id: z.string().describe("The sevdesk part ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID"),
 };
 
 // ============================================================================

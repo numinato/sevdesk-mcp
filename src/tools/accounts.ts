@@ -20,7 +20,7 @@ export const listCheckAccountsSchema = {
  * Get check account balance schema
  */
 export const getCheckAccountBalanceSchema = {
-  id: z.string().describe("The sevdesk check account ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID"),
   date: z.string().optional().describe("Date to get balance at (YYYY-MM-DD format). Defaults to today."),
 };
 
@@ -138,7 +138,7 @@ export function formatBalance(balance: string, accountId: string, date?: string)
  * Get check account schema
  */
 export const getCheckAccountSchema = {
-  id: z.string().describe("The sevdesk check account ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID"),
 };
 
 /**
@@ -156,7 +156,7 @@ export const createCheckAccountSchema = {
  * Update check account schema
  */
 export const updateCheckAccountSchema = {
-  id: z.string().describe("The sevdesk check account ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID to update"),
   name: z.string().optional().describe("Account name"),
   currency: z.string().optional().describe("Currency code"),
   defaultAccount: z.boolean().optional().describe("Set as default account"),
@@ -167,7 +167,7 @@ export const updateCheckAccountSchema = {
  * Delete check account schema
  */
 export const deleteCheckAccountSchema = {
-  id: z.string().describe("The sevdesk check account ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID to delete"),
 };
 
 /**
@@ -266,7 +266,7 @@ export const listTransactionsSchema = {
  * Get transaction schema
  */
 export const getTransactionSchema = {
-  id: z.string().describe("The transaction ID"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The transaction ID"),
 };
 
 /**
@@ -285,7 +285,7 @@ export const createTransactionSchema = {
  * Update transaction schema
  */
 export const updateTransactionSchema = {
-  id: z.string().describe("The transaction ID to update"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The transaction ID to update"),
   payeePayerName: z.string().optional().describe("Name of payee/payer"),
   paymtPurpose: z.string().optional().describe("Payment purpose/description"),
   status: z.string().optional().describe("Transaction status"),
@@ -295,7 +295,7 @@ export const updateTransactionSchema = {
  * Delete transaction schema
  */
 export const deleteTransactionSchema = {
-  id: z.string().describe("The transaction ID to delete"),
+  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The transaction ID to delete"),
 };
 
 /**
