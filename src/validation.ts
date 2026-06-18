@@ -23,7 +23,10 @@ export const idSchema = z
  */
 export function idSegment(id: string): string {
   if (!NUMERIC_ID.test(id)) {
-    throw new Error(`Invalid sevDesk ID "${id}": expected a numeric string`);
+    // Serialize + truncate so a non-numeric value (only reachable by callers that
+    // bypass the Zod layer) can't reflect quotes/newlines through handleError().
+    const shown = JSON.stringify(id.length > 64 ? `${id.slice(0, 64)}…` : id);
+    throw new Error(`Invalid sevDesk ID ${shown}: expected a numeric string`);
   }
   return id;
 }
