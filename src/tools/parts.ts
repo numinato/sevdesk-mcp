@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { Part } from "../types.js";
 
@@ -26,7 +27,7 @@ export const listPartsSchema = {
  * Get part schema
  */
 export const getPartSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID"),
+  id: idSchema.describe("The sevdesk part ID"),
 };
 
 /**
@@ -51,7 +52,7 @@ export const createPartSchema = {
  * Update part schema
  */
 export const updatePartSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID to update"),
+  id: idSchema.describe("The sevdesk part ID to update"),
   name: z.string().optional().describe("Part name"),
   partNumber: z.string().optional().describe("Part number"),
   text: z.string().optional().describe("Description text"),
@@ -69,14 +70,14 @@ export const updatePartSchema = {
  * Delete part schema
  */
 export const deletePartSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID to delete"),
+  id: idSchema.describe("The sevdesk part ID to delete"),
 };
 
 /**
  * Get part stock schema
  */
 export const getPartStockSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk part ID"),
+  id: idSchema.describe("The sevdesk part ID"),
 };
 
 // ============================================================================
@@ -111,7 +112,7 @@ export async function listParts(params: {
  * Get a single part by ID
  */
 export async function getPart(params: { id: string }): Promise<Part> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<Part>>(`/Part/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<Part>>(`/Part/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -186,7 +187,7 @@ export async function updatePart(params: {
   if (params.internalComment !== undefined) body.internalComment = params.internalComment;
   if (params.status !== undefined) body.status = params.status;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Part>>(`/Part/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Part>>(`/Part/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -194,14 +195,14 @@ export async function updatePart(params: {
  * Delete a part
  */
 export async function deletePart(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/Part/${params.id}`);
+  await sevdeskDelete(`/Part/${idSegment(params.id)}`);
 }
 
 /**
  * Get part stock information
  */
 export async function getPartStock(params: { id: string }): Promise<number> {
-  const response = await sevdeskFetch<{ objects: number }>(`/Part/${params.id}/getStock`);
+  const response = await sevdeskFetch<{ objects: number }>(`/Part/${idSegment(params.id)}/getStock`);
   return response.objects;
 }
 

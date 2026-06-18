@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { CommunicationWay } from "../types.js";
 
@@ -25,7 +26,7 @@ export const listCommunicationWaysSchema = {
  * Get communication way schema
  */
 export const getCommunicationWaySchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk communication way ID"),
+  id: idSchema.describe("The sevdesk communication way ID"),
 };
 
 /**
@@ -43,7 +44,7 @@ export const createCommunicationWaySchema = {
  * Update communication way schema
  */
 export const updateCommunicationWaySchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk communication way ID to update"),
+  id: idSchema.describe("The sevdesk communication way ID to update"),
   value: z.string().optional().describe("The value (email address, phone number, URL, etc.)"),
   main: z.boolean().optional().describe("Set as main/primary communication way"),
 };
@@ -52,7 +53,7 @@ export const updateCommunicationWaySchema = {
  * Delete communication way schema
  */
 export const deleteCommunicationWaySchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk communication way ID to delete"),
+  id: idSchema.describe("The sevdesk communication way ID to delete"),
 };
 
 // ============================================================================
@@ -102,7 +103,7 @@ export async function listCommunicationWays(params: {
  * Get a single communication way by ID
  */
 export async function getCommunicationWay(params: { id: string }): Promise<CommunicationWay> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<CommunicationWay>>(`/CommunicationWay/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<CommunicationWay>>(`/CommunicationWay/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -141,7 +142,7 @@ export async function updateCommunicationWay(params: {
   if (params.value !== undefined) body.value = params.value;
   if (params.main !== undefined) body.main = params.main ? "1" : "0";
 
-  const response = await sevdeskPut<SevdeskSingleResponse<CommunicationWay>>(`/CommunicationWay/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<CommunicationWay>>(`/CommunicationWay/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -149,7 +150,7 @@ export async function updateCommunicationWay(params: {
  * Delete a communication way
  */
 export async function deleteCommunicationWay(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/CommunicationWay/${params.id}`);
+  await sevdeskDelete(`/CommunicationWay/${idSegment(params.id)}`);
 }
 
 // ============================================================================

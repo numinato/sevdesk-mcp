@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { CheckAccount, CheckAccountTransaction } from "../types.js";
 
@@ -20,7 +21,7 @@ export const listCheckAccountsSchema = {
  * Get check account balance schema
  */
 export const getCheckAccountBalanceSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID"),
+  id: idSchema.describe("The sevdesk check account ID"),
   date: z.string().optional().describe("Date to get balance at (YYYY-MM-DD format). Defaults to today."),
 };
 
@@ -60,7 +61,7 @@ export async function getCheckAccountBalance(params: {
   });
 
   const response = await sevdeskFetch<{ objects: string }>(
-    `/CheckAccount/${params.id}/getBalanceAtDate${queryString}`
+    `/CheckAccount/${idSegment(params.id)}/getBalanceAtDate${queryString}`
   );
 
   return response.objects;
@@ -138,7 +139,7 @@ export function formatBalance(balance: string, accountId: string, date?: string)
  * Get check account schema
  */
 export const getCheckAccountSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID"),
+  id: idSchema.describe("The sevdesk check account ID"),
 };
 
 /**
@@ -156,7 +157,7 @@ export const createCheckAccountSchema = {
  * Update check account schema
  */
 export const updateCheckAccountSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID to update"),
+  id: idSchema.describe("The sevdesk check account ID to update"),
   name: z.string().optional().describe("Account name"),
   currency: z.string().optional().describe("Currency code"),
   defaultAccount: z.boolean().optional().describe("Set as default account"),
@@ -167,7 +168,7 @@ export const updateCheckAccountSchema = {
  * Delete check account schema
  */
 export const deleteCheckAccountSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk check account ID to delete"),
+  id: idSchema.describe("The sevdesk check account ID to delete"),
 };
 
 /**
@@ -175,7 +176,7 @@ export const deleteCheckAccountSchema = {
  */
 export async function getCheckAccount(params: { id: string }): Promise<CheckAccount> {
   const response = await sevdeskFetch<SevdeskSingleResponse<CheckAccount>>(
-    `/CheckAccount/${params.id}`
+    `/CheckAccount/${idSegment(params.id)}`
   );
   return extractSingleObject(response);
 }
@@ -221,7 +222,7 @@ export async function updateCheckAccount(params: {
   if (params.defaultAccount !== undefined) body.defaultAccount = params.defaultAccount ? "1" : "0";
   if (params.status !== undefined) body.status = params.status;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<CheckAccount>>(`/CheckAccount/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<CheckAccount>>(`/CheckAccount/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -229,7 +230,7 @@ export async function updateCheckAccount(params: {
  * Delete a check account
  */
 export async function deleteCheckAccount(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/CheckAccount/${params.id}`);
+  await sevdeskDelete(`/CheckAccount/${idSegment(params.id)}`);
 }
 
 /**
@@ -266,7 +267,7 @@ export const listTransactionsSchema = {
  * Get transaction schema
  */
 export const getTransactionSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The transaction ID"),
+  id: idSchema.describe("The transaction ID"),
 };
 
 /**
@@ -285,7 +286,7 @@ export const createTransactionSchema = {
  * Update transaction schema
  */
 export const updateTransactionSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The transaction ID to update"),
+  id: idSchema.describe("The transaction ID to update"),
   payeePayerName: z.string().optional().describe("Name of payee/payer"),
   paymtPurpose: z.string().optional().describe("Payment purpose/description"),
   status: z.string().optional().describe("Transaction status"),
@@ -295,7 +296,7 @@ export const updateTransactionSchema = {
  * Delete transaction schema
  */
 export const deleteTransactionSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The transaction ID to delete"),
+  id: idSchema.describe("The transaction ID to delete"),
 };
 
 /**
@@ -335,7 +336,7 @@ export async function listTransactions(params: {
  */
 export async function getTransaction(params: { id: string }): Promise<CheckAccountTransaction> {
   const response = await sevdeskFetch<SevdeskSingleResponse<CheckAccountTransaction>>(
-    `/CheckAccountTransaction/${params.id}`
+    `/CheckAccountTransaction/${idSegment(params.id)}`
   );
   return extractSingleObject(response);
 }
@@ -382,7 +383,7 @@ export async function updateTransaction(params: {
   if (params.status !== undefined) body.status = params.status;
 
   const response = await sevdeskPut<SevdeskSingleResponse<CheckAccountTransaction>>(
-    `/CheckAccountTransaction/${params.id}`,
+    `/CheckAccountTransaction/${idSegment(params.id)}`,
     body
   );
   return extractSingleObject(response);
@@ -392,7 +393,7 @@ export async function updateTransaction(params: {
  * Delete a transaction
  */
 export async function deleteTransaction(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/CheckAccountTransaction/${params.id}`);
+  await sevdeskDelete(`/CheckAccountTransaction/${idSegment(params.id)}`);
 }
 
 /**

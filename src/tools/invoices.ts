@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, sevdeskFetchPdf, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { Invoice, InvoicePos } from "../types.js";
 
@@ -39,7 +40,7 @@ export const listInvoicesSchema = {
  * Get invoice schema
  */
 export const getInvoiceSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
+  id: idSchema.describe("The sevdesk invoice ID"),
 };
 
 /**
@@ -92,7 +93,7 @@ export async function listInvoices(params: {
  */
 export async function getInvoice(params: { id: string }): Promise<Invoice> {
   const response = await sevdeskFetch<SevdeskSingleResponse<Invoice>>(
-    `/Invoice/${params.id}`
+    `/Invoice/${idSegment(params.id)}`
   );
 
   return extractSingleObject(response);
@@ -241,7 +242,7 @@ export const createRecurringInvoiceSchema = {
  * Update invoice schema
  */
 export const updateInvoiceSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to update"),
+  id: idSchema.describe("The sevdesk invoice ID to update"),
   header: z.string().optional().describe("Invoice header/title"),
   headText: z.string().optional().describe("Text before positions"),
   footText: z.string().optional().describe("Text after positions"),
@@ -255,14 +256,14 @@ export const updateInvoiceSchema = {
  * Delete invoice schema
  */
 export const deleteInvoiceSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to delete"),
+  id: idSchema.describe("The sevdesk invoice ID to delete"),
 };
 
 /**
  * Get invoice PDF schema
  */
 export const getInvoicePdfSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
+  id: idSchema.describe("The sevdesk invoice ID"),
   download: z.boolean().optional().describe("Set to true to get download-ready content"),
 };
 
@@ -270,7 +271,7 @@ export const getInvoicePdfSchema = {
  * Send invoice via email schema
  */
 export const sendInvoiceEmailSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
+  id: idSchema.describe("The sevdesk invoice ID"),
   email: z.string().describe("Recipient email address"),
   subject: z.string().describe("Email subject"),
   text: z.string().describe("Email body text"),
@@ -282,21 +283,21 @@ export const sendInvoiceEmailSchema = {
  * Reset invoice to draft schema (v2.0)
  */
 export const resetInvoiceToDraftSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to reset to draft status (100)"),
+  id: idSchema.describe("The sevdesk invoice ID to reset to draft status (100)"),
 };
 
 /**
  * Reset invoice to open schema (v2.0)
  */
 export const resetInvoiceToOpenSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to reset to open status (200)"),
+  id: idSchema.describe("The sevdesk invoice ID to reset to open status (200)"),
 };
 
 /**
  * Mark invoice as sent schema (v2.0 — transitions draft→open)
  */
 export const markInvoiceSentSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
+  id: idSchema.describe("The sevdesk invoice ID"),
   sendType: z.string().optional().describe("Send type: VPR (print), VM (mail), VP (post), VPDF (pdf). Default: VPDF"),
   sendDraft: z.boolean().optional().describe("Set to true to mark as sent without actually sending"),
 };
@@ -305,14 +306,14 @@ export const markInvoiceSentSchema = {
  * Enshrine (finalize) invoice schema
  */
 export const enshrineInvoiceSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID to enshrine (finalize)"),
+  id: idSchema.describe("The sevdesk invoice ID to enshrine (finalize)"),
 };
 
 /**
  * Book invoice payment schema
  */
 export const bookInvoicePaymentSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The sevdesk invoice ID"),
+  id: idSchema.describe("The sevdesk invoice ID"),
   amount: z.number().describe("Payment amount"),
   date: z.string().optional().describe("Payment date (YYYY-MM-DD)"),
   checkAccountId: z.string().optional().describe("Bank account ID for the payment"),
@@ -333,7 +334,7 @@ export const listInvoicePositionsSchema = {
  * Get invoice position schema
  */
 export const getInvoicePositionSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The invoice position ID"),
+  id: idSchema.describe("The invoice position ID"),
 };
 
 /**
@@ -356,7 +357,7 @@ export const createInvoicePositionSchema = {
  * Update invoice position schema
  */
 export const updateInvoicePositionSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The invoice position ID to update"),
+  id: idSchema.describe("The invoice position ID to update"),
   quantity: z.number().optional().describe("Quantity"),
   price: z.number().optional().describe("Unit price (net)"),
   name: z.string().optional().describe("Position name/description"),
@@ -369,7 +370,7 @@ export const updateInvoicePositionSchema = {
  * Delete invoice position schema
  */
 export const deleteInvoicePositionSchema = {
-  id: z.string().regex(/^\d+$/, "Must be a numeric sevDesk ID").describe("The invoice position ID to delete"),
+  id: idSchema.describe("The invoice position ID to delete"),
 };
 
 /**
@@ -578,7 +579,7 @@ export async function updateInvoice(params: {
   if (params.timeToPay !== undefined) body.timeToPay = params.timeToPay;
   if (params.customerInternalNote !== undefined) body.customerInternalNote = params.customerInternalNote;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -586,7 +587,7 @@ export async function updateInvoice(params: {
  * Delete an invoice
  */
 export async function deleteInvoice(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/Invoice/${params.id}`);
+  await sevdeskDelete(`/Invoice/${idSegment(params.id)}`);
 }
 
 /**
@@ -594,7 +595,7 @@ export async function deleteInvoice(params: { id: string }): Promise<void> {
  */
 export async function getInvoicePdf(params: { id: string; download?: boolean }): Promise<string> {
   const queryString = params.download ? "?download=true" : "";
-  return sevdeskFetchPdf(`/Invoice/${params.id}/getPdf${queryString}`);
+  return sevdeskFetchPdf(`/Invoice/${idSegment(params.id)}/getPdf${queryString}`);
 }
 
 /**
@@ -619,14 +620,14 @@ export async function sendInvoiceEmail(params: {
     body.additionalAttachments = params.additionalAttachments;
   }
 
-  await sevdeskPost(`/Invoice/${params.id}/sendViaEmail`, body);
+  await sevdeskPost(`/Invoice/${idSegment(params.id)}/sendViaEmail`, body);
 }
 
 /**
  * Reset invoice to draft (v2.0 — PUT /Invoice/{id}/resetToDraft)
  */
 export async function resetInvoiceToDraft(params: { id: string }): Promise<Invoice> {
-  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${params.id}/resetToDraft`, {});
+  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${idSegment(params.id)}/resetToDraft`, {});
   return extractSingleObject(response);
 }
 
@@ -634,7 +635,7 @@ export async function resetInvoiceToDraft(params: { id: string }): Promise<Invoi
  * Reset invoice to open (v2.0 — PUT /Invoice/{id}/resetToOpen)
  */
 export async function resetInvoiceToOpen(params: { id: string }): Promise<Invoice> {
-  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${params.id}/resetToOpen`, {});
+  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${idSegment(params.id)}/resetToOpen`, {});
   return extractSingleObject(response);
 }
 
@@ -642,7 +643,7 @@ export async function resetInvoiceToOpen(params: { id: string }): Promise<Invoic
  * Mark invoice as sent (v2.0 — PUT /Invoice/{id}/sendBy, transitions draft→open)
  */
 export async function markInvoiceSent(params: { id: string; sendType?: string; sendDraft?: boolean }): Promise<Invoice> {
-  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${params.id}/sendBy`, {
+  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${idSegment(params.id)}/sendBy`, {
     sendType: params.sendType || "VPDF",
     sendDraft: params.sendDraft ?? false,
   });
@@ -653,7 +654,7 @@ export async function markInvoiceSent(params: { id: string; sendType?: string; s
  * Enshrine (finalize) an invoice (v2.0 — PUT /Invoice/{id}/enshrine)
  */
 export async function enshrineInvoice(params: { id: string }): Promise<Invoice> {
-  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${params.id}/enshrine`, {});
+  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${idSegment(params.id)}/enshrine`, {});
   return extractSingleObject(response);
 }
 
@@ -681,7 +682,7 @@ export async function bookInvoicePayment(params: {
     body.checkAccountTransaction = { id: params.checkAccountTransactionId, objectName: "CheckAccountTransaction" };
   }
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${params.id}/bookAmount`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Invoice>>(`/Invoice/${idSegment(params.id)}/bookAmount`, body);
   return extractSingleObject(response);
 }
 
@@ -708,7 +709,7 @@ export async function listInvoicePositions(params: {
  * Get a single invoice position
  */
 export async function getInvoicePosition(params: { id: string }): Promise<InvoicePos> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<InvoicePos>>(`/InvoicePos/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<InvoicePos>>(`/InvoicePos/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -769,7 +770,7 @@ export async function updateInvoicePosition(params: {
   if (params.text !== undefined) body.text = params.text;
   if (params.discount !== undefined) body.discount = params.discount;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<InvoicePos>>(`/InvoicePos/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<InvoicePos>>(`/InvoicePos/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -777,7 +778,7 @@ export async function updateInvoicePosition(params: {
  * Delete an invoice position
  */
 export async function deleteInvoicePosition(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/InvoicePos/${params.id}`);
+  await sevdeskDelete(`/InvoicePos/${idSegment(params.id)}`);
 }
 
 /**
