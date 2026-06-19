@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { Tag, TagRelation } from "../types.js";
 
@@ -24,7 +25,7 @@ export const listTagsSchema = {
  * Get tag schema
  */
 export const getTagSchema = {
-  id: z.string().describe("The sevdesk tag ID"),
+  id: idSchema.describe("The sevdesk tag ID"),
 };
 
 /**
@@ -38,7 +39,7 @@ export const createTagSchema = {
  * Update tag schema
  */
 export const updateTagSchema = {
-  id: z.string().describe("The sevdesk tag ID to update"),
+  id: idSchema.describe("The sevdesk tag ID to update"),
   name: z.string().describe("New tag name"),
 };
 
@@ -46,7 +47,7 @@ export const updateTagSchema = {
  * Delete tag schema
  */
 export const deleteTagSchema = {
-  id: z.string().describe("The sevdesk tag ID to delete"),
+  id: idSchema.describe("The sevdesk tag ID to delete"),
 };
 
 /**
@@ -73,7 +74,7 @@ export const addTagToObjectSchema = {
  * Remove tag from object schema
  */
 export const removeTagFromObjectSchema = {
-  id: z.string().describe("The tag relation ID to delete"),
+  id: idSchema.describe("The tag relation ID to delete"),
 };
 
 // ============================================================================
@@ -104,7 +105,7 @@ export async function listTags(params: {
  * Get a single tag by ID
  */
 export async function getTag(params: { id: string }): Promise<Tag> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<Tag>>(`/Tag/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<Tag>>(`/Tag/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -128,7 +129,7 @@ export async function updateTag(params: { id: string; name: string }): Promise<T
     name: params.name,
   };
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Tag>>(`/Tag/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Tag>>(`/Tag/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -136,7 +137,7 @@ export async function updateTag(params: { id: string; name: string }): Promise<T
  * Delete a tag
  */
 export async function deleteTag(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/Tag/${params.id}`);
+  await sevdeskDelete(`/Tag/${idSegment(params.id)}`);
 }
 
 /**
@@ -189,7 +190,7 @@ export async function addTagToObject(params: {
  * Remove a tag from an object (delete tag relation)
  */
 export async function removeTagFromObject(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/TagRelation/${params.id}`);
+  await sevdeskDelete(`/TagRelation/${idSegment(params.id)}`);
 }
 
 // ============================================================================

@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, sevdeskFetchPdf, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { CreditNote, CreditNotePos } from "../types.js";
 
@@ -43,7 +44,7 @@ export const listCreditNotesSchema = {
  * Get credit note schema
  */
 export const getCreditNoteSchema = {
-  id: z.string().describe("The sevdesk credit note ID"),
+  id: idSchema.describe("The sevdesk credit note ID"),
 };
 
 /**
@@ -81,7 +82,7 @@ export const createCreditNoteSchema = {
  * Update credit note schema
  */
 export const updateCreditNoteSchema = {
-  id: z.string().describe("The sevdesk credit note ID to update"),
+  id: idSchema.describe("The sevdesk credit note ID to update"),
   header: z.string().optional().describe("Credit note header/title"),
   headText: z.string().optional().describe("Text before positions"),
   footText: z.string().optional().describe("Text after positions"),
@@ -92,14 +93,14 @@ export const updateCreditNoteSchema = {
  * Delete credit note schema
  */
 export const deleteCreditNoteSchema = {
-  id: z.string().describe("The sevdesk credit note ID to delete"),
+  id: idSchema.describe("The sevdesk credit note ID to delete"),
 };
 
 /**
  * Get credit note PDF schema
  */
 export const getCreditNotePdfSchema = {
-  id: z.string().describe("The sevdesk credit note ID"),
+  id: idSchema.describe("The sevdesk credit note ID"),
   download: z.boolean().optional().describe("Set to true to get download-ready content"),
 };
 
@@ -107,21 +108,21 @@ export const getCreditNotePdfSchema = {
  * Reset credit note to draft schema (v2.0)
  */
 export const resetCreditNoteToDraftSchema = {
-  id: z.string().describe("The sevdesk credit note ID to reset to draft status (100)"),
+  id: idSchema.describe("The sevdesk credit note ID to reset to draft status (100)"),
 };
 
 /**
  * Reset credit note to open schema (v2.0)
  */
 export const resetCreditNoteToOpenSchema = {
-  id: z.string().describe("The sevdesk credit note ID to reset to open status (200)"),
+  id: idSchema.describe("The sevdesk credit note ID to reset to open status (200)"),
 };
 
 /**
  * Send credit note via email schema
  */
 export const sendCreditNoteEmailSchema = {
-  id: z.string().describe("The sevdesk credit note ID"),
+  id: idSchema.describe("The sevdesk credit note ID"),
   email: z.string().describe("Recipient email address"),
   subject: z.string().describe("Email subject"),
   text: z.string().describe("Email body text"),
@@ -141,7 +142,7 @@ export const listCreditNotePositionsSchema = {
  * Get credit note position schema
  */
 export const getCreditNotePositionSchema = {
-  id: z.string().describe("The credit note position ID"),
+  id: idSchema.describe("The credit note position ID"),
 };
 
 /**
@@ -163,7 +164,7 @@ export const createCreditNotePositionSchema = {
  * Update credit note position schema
  */
 export const updateCreditNotePositionSchema = {
-  id: z.string().describe("The credit note position ID to update"),
+  id: idSchema.describe("The credit note position ID to update"),
   quantity: z.number().optional().describe("Quantity"),
   price: z.number().optional().describe("Unit price (net)"),
   name: z.string().optional().describe("Position name/description"),
@@ -176,7 +177,7 @@ export const updateCreditNotePositionSchema = {
  * Delete credit note position schema
  */
 export const deleteCreditNotePositionSchema = {
-  id: z.string().describe("The credit note position ID to delete"),
+  id: idSchema.describe("The credit note position ID to delete"),
 };
 
 // ============================================================================
@@ -232,7 +233,7 @@ export async function listCreditNotes(params: {
  * Get a single credit note by ID
  */
 export async function getCreditNote(params: { id: string }): Promise<CreditNote> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -333,7 +334,7 @@ export async function updateCreditNote(params: {
   if (params.footText !== undefined) body.footText = params.footText;
   if (params.customerInternalNote !== undefined) body.customerInternalNote = params.customerInternalNote;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -341,7 +342,7 @@ export async function updateCreditNote(params: {
  * Delete a credit note
  */
 export async function deleteCreditNote(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/CreditNote/${params.id}`);
+  await sevdeskDelete(`/CreditNote/${idSegment(params.id)}`);
 }
 
 /**
@@ -349,7 +350,7 @@ export async function deleteCreditNote(params: { id: string }): Promise<void> {
  */
 export async function getCreditNotePdf(params: { id: string; download?: boolean }): Promise<string> {
   const queryString = params.download ? "?download=true" : "";
-  return sevdeskFetchPdf(`/CreditNote/${params.id}/getPdf${queryString}`);
+  return sevdeskFetchPdf(`/CreditNote/${idSegment(params.id)}/getPdf${queryString}`);
 }
 
 /**
@@ -369,14 +370,14 @@ export async function sendCreditNoteEmail(params: {
     copy: params.copy || false,
   };
 
-  await sevdeskPost(`/CreditNote/${params.id}/sendViaEmail`, body);
+  await sevdeskPost(`/CreditNote/${idSegment(params.id)}/sendViaEmail`, body);
 }
 
 /**
  * Reset credit note to draft (v2.0 — PUT /CreditNote/{id}/resetToDraft)
  */
 export async function resetCreditNoteToDraft(params: { id: string }): Promise<CreditNote> {
-  const response = await sevdeskPut<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${params.id}/resetToDraft`, {});
+  const response = await sevdeskPut<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${idSegment(params.id)}/resetToDraft`, {});
   return extractSingleObject(response);
 }
 
@@ -384,7 +385,7 @@ export async function resetCreditNoteToDraft(params: { id: string }): Promise<Cr
  * Reset credit note to open (v2.0 — PUT /CreditNote/{id}/resetToOpen)
  */
 export async function resetCreditNoteToOpen(params: { id: string }): Promise<CreditNote> {
-  const response = await sevdeskPut<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${params.id}/resetToOpen`, {});
+  const response = await sevdeskPut<SevdeskSingleResponse<CreditNote>>(`/CreditNote/${idSegment(params.id)}/resetToOpen`, {});
   return extractSingleObject(response);
 }
 
@@ -411,7 +412,7 @@ export async function listCreditNotePositions(params: {
  * Get a single credit note position
  */
 export async function getCreditNotePosition(params: { id: string }): Promise<CreditNotePos> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<CreditNotePos>>(`/CreditNotePos/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<CreditNotePos>>(`/CreditNotePos/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -470,7 +471,7 @@ export async function updateCreditNotePosition(params: {
   if (params.text !== undefined) body.text = params.text;
   if (params.discount !== undefined) body.discount = params.discount;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<CreditNotePos>>(`/CreditNotePos/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<CreditNotePos>>(`/CreditNotePos/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -478,7 +479,7 @@ export async function updateCreditNotePosition(params: {
  * Delete a credit note position
  */
 export async function deleteCreditNotePosition(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/CreditNotePos/${params.id}`);
+  await sevdeskDelete(`/CreditNotePos/${idSegment(params.id)}`);
 }
 
 // ============================================================================

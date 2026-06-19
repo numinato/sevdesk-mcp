@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, sevdeskFetchPdf, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { Order, OrderPos } from "../types.js";
 
@@ -43,7 +44,7 @@ export const listOrdersSchema = {
  * Get order schema
  */
 export const getOrderSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: idSchema.describe("The sevdesk order ID"),
 };
 
 /**
@@ -82,7 +83,7 @@ export const createOrderSchema = {
  * Update order schema
  */
 export const updateOrderSchema = {
-  id: z.string().describe("The sevdesk order ID to update"),
+  id: idSchema.describe("The sevdesk order ID to update"),
   header: z.string().optional().describe("Order header/title"),
   headText: z.string().optional().describe("Text before positions"),
   footText: z.string().optional().describe("Text after positions"),
@@ -94,14 +95,14 @@ export const updateOrderSchema = {
  * Delete order schema
  */
 export const deleteOrderSchema = {
-  id: z.string().describe("The sevdesk order ID to delete"),
+  id: idSchema.describe("The sevdesk order ID to delete"),
 };
 
 /**
  * Get order PDF schema
  */
 export const getOrderPdfSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: idSchema.describe("The sevdesk order ID"),
   download: z.boolean().optional().describe("Set to true to get download-ready content"),
 };
 
@@ -109,7 +110,7 @@ export const getOrderPdfSchema = {
  * Send order via email schema
  */
 export const sendOrderEmailSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: idSchema.describe("The sevdesk order ID"),
   email: z.string().describe("Recipient email address"),
   subject: z.string().describe("Email subject"),
   text: z.string().describe("Email body text"),
@@ -120,7 +121,7 @@ export const sendOrderEmailSchema = {
  * Change order status schema
  */
 export const changeOrderStatusSchema = {
-  id: z.string().describe("The sevdesk order ID"),
+  id: idSchema.describe("The sevdesk order ID"),
   status: z.number().describe("New status: 100 (created), 200 (sent), 300 (accepted), 500 (rejected)"),
 };
 
@@ -137,7 +138,7 @@ export const listOrderPositionsSchema = {
  * Get order position schema
  */
 export const getOrderPositionSchema = {
-  id: z.string().describe("The order position ID"),
+  id: idSchema.describe("The order position ID"),
 };
 
 /**
@@ -159,7 +160,7 @@ export const createOrderPositionSchema = {
  * Update order position schema
  */
 export const updateOrderPositionSchema = {
-  id: z.string().describe("The order position ID to update"),
+  id: idSchema.describe("The order position ID to update"),
   quantity: z.number().optional().describe("Quantity"),
   price: z.number().optional().describe("Unit price (net)"),
   name: z.string().optional().describe("Position name/description"),
@@ -172,7 +173,7 @@ export const updateOrderPositionSchema = {
  * Delete order position schema
  */
 export const deleteOrderPositionSchema = {
-  id: z.string().describe("The order position ID to delete"),
+  id: idSchema.describe("The order position ID to delete"),
 };
 
 // ============================================================================
@@ -231,7 +232,7 @@ export async function listOrders(params: {
  * Get a single order by ID
  */
 export async function getOrder(params: { id: string }): Promise<Order> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<Order>>(`/Order/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<Order>>(`/Order/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -336,7 +337,7 @@ export async function updateOrder(params: {
   if (params.deliveryDate !== undefined) body.deliveryDate = params.deliveryDate;
   if (params.customerInternalNote !== undefined) body.customerInternalNote = params.customerInternalNote;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Order>>(`/Order/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Order>>(`/Order/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -344,7 +345,7 @@ export async function updateOrder(params: {
  * Delete an order
  */
 export async function deleteOrder(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/Order/${params.id}`);
+  await sevdeskDelete(`/Order/${idSegment(params.id)}`);
 }
 
 /**
@@ -352,7 +353,7 @@ export async function deleteOrder(params: { id: string }): Promise<void> {
  */
 export async function getOrderPdf(params: { id: string; download?: boolean }): Promise<string> {
   const queryString = params.download ? "?download=true" : "";
-  return sevdeskFetchPdf(`/Order/${params.id}/getPdf${queryString}`);
+  return sevdeskFetchPdf(`/Order/${idSegment(params.id)}/getPdf${queryString}`);
 }
 
 /**
@@ -372,14 +373,14 @@ export async function sendOrderEmail(params: {
     copy: params.copy || false,
   };
 
-  await sevdeskPost(`/Order/${params.id}/sendViaEmail`, body);
+  await sevdeskPost(`/Order/${idSegment(params.id)}/sendViaEmail`, body);
 }
 
 /**
  * Change order status
  */
 export async function changeOrderStatus(params: { id: string; status: number }): Promise<Order> {
-  const response = await sevdeskPut<SevdeskSingleResponse<Order>>(`/Order/${params.id}/changeStatus`, {
+  const response = await sevdeskPut<SevdeskSingleResponse<Order>>(`/Order/${idSegment(params.id)}/changeStatus`, {
     value: params.status,
   });
   return extractSingleObject(response);
@@ -408,7 +409,7 @@ export async function listOrderPositions(params: {
  * Get a single order position
  */
 export async function getOrderPosition(params: { id: string }): Promise<OrderPos> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<OrderPos>>(`/OrderPos/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<OrderPos>>(`/OrderPos/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -467,7 +468,7 @@ export async function updateOrderPosition(params: {
   if (params.text !== undefined) body.text = params.text;
   if (params.discount !== undefined) body.discount = params.discount;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<OrderPos>>(`/OrderPos/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<OrderPos>>(`/OrderPos/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -475,7 +476,7 @@ export async function updateOrderPosition(params: {
  * Delete an order position
  */
 export async function deleteOrderPosition(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/OrderPos/${params.id}`);
+  await sevdeskDelete(`/OrderPos/${idSegment(params.id)}`);
 }
 
 // ============================================================================

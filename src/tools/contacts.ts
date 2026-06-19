@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { Contact } from "../types.js";
 
@@ -22,7 +23,7 @@ export const listContactsSchema = {
  * Get contact schema
  */
 export const getContactSchema = {
-  id: z.string().describe("The sevdesk contact ID"),
+  id: idSchema.describe("The sevdesk contact ID"),
 };
 
 /**
@@ -55,7 +56,7 @@ export async function listContacts(params: {
  */
 export async function getContact(params: { id: string }): Promise<Contact> {
   const response = await sevdeskFetch<SevdeskSingleResponse<Contact>>(
-    `/Contact/${params.id}`
+    `/Contact/${idSegment(params.id)}`
   );
 
   return extractSingleObject(response);
@@ -139,7 +140,7 @@ export const createContactSchema = {
  * Update contact schema
  */
 export const updateContactSchema = {
-  id: z.string().describe("The sevdesk contact ID to update"),
+  id: idSchema.describe("The sevdesk contact ID to update"),
   name: z.string().optional().describe("Company name (for organizations)"),
   surename: z.string().optional().describe("First name (for individuals)"),
   familyname: z.string().optional().describe("Last name (for individuals)"),
@@ -160,7 +161,7 @@ export const updateContactSchema = {
  * Delete contact schema
  */
 export const deleteContactSchema = {
-  id: z.string().describe("The sevdesk contact ID to delete"),
+  id: idSchema.describe("The sevdesk contact ID to delete"),
 };
 
 /**
@@ -249,7 +250,7 @@ export async function updateContact(params: {
   if (params.gender !== undefined) body.gender = params.gender;
   if (params.birthday !== undefined) body.birthday = params.birthday;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Contact>>(`/Contact/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Contact>>(`/Contact/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -257,7 +258,7 @@ export async function updateContact(params: {
  * Delete a contact
  */
 export async function deleteContact(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/Contact/${params.id}`);
+  await sevdeskDelete(`/Contact/${idSegment(params.id)}`);
 }
 
 /**

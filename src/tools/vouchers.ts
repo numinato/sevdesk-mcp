@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, sevdeskUploadFile, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject, VoucherFileUploadResponse } from "../api.js";
 import type { Voucher, VoucherPos } from "../types.js";
 
@@ -25,7 +26,7 @@ export const listVouchersSchema = {
  * Get voucher schema
  */
 export const getVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID"),
+  id: idSchema.describe("The sevdesk voucher ID"),
 };
 
 /**
@@ -78,7 +79,7 @@ export async function listVouchers(params: {
  */
 export async function getVoucher(params: { id: string }): Promise<Voucher> {
   const response = await sevdeskFetch<SevdeskSingleResponse<Voucher>>(
-    `/Voucher/${params.id}`
+    `/Voucher/${idSegment(params.id)}`
   );
 
   return extractSingleObject(response);
@@ -213,7 +214,7 @@ export const createVoucherSchema = {
  * Update voucher schema
  */
 export const updateVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID to update"),
+  id: idSchema.describe("The sevdesk voucher ID to update"),
   description: z.string().optional().describe("Voucher description"),
   paymentDeadline: z.string().optional().describe("Payment deadline (YYYY-MM-DD)"),
   deliveryDate: z.string().optional().describe("Delivery date (YYYY-MM-DD)"),
@@ -224,14 +225,14 @@ export const updateVoucherSchema = {
  * Delete voucher schema
  */
 export const deleteVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID to delete"),
+  id: idSchema.describe("The sevdesk voucher ID to delete"),
 };
 
 /**
  * Book voucher payment schema
  */
 export const bookVoucherPaymentSchema = {
-  id: z.string().describe("The sevdesk voucher ID"),
+  id: idSchema.describe("The sevdesk voucher ID"),
   amount: z.number().describe("Payment amount"),
   date: z.string().optional().describe("Payment date (YYYY-MM-DD)"),
   checkAccountId: z.string().optional().describe("Bank account ID for the payment"),
@@ -243,7 +244,7 @@ export const bookVoucherPaymentSchema = {
  * Enshrine voucher schema
  */
 export const enshrineVoucherSchema = {
-  id: z.string().describe("The sevdesk voucher ID to enshrine (finalize)"),
+  id: idSchema.describe("The sevdesk voucher ID to enshrine (finalize)"),
 };
 
 /**
@@ -259,7 +260,7 @@ export const listVoucherPositionsSchema = {
  * Get voucher position schema
  */
 export const getVoucherPositionSchema = {
-  id: z.string().describe("The voucher position ID"),
+  id: idSchema.describe("The voucher position ID"),
 };
 
 /**
@@ -279,7 +280,7 @@ export const createVoucherPositionSchema = {
  * Update voucher position schema
  */
 export const updateVoucherPositionSchema = {
-  id: z.string().describe("The voucher position ID to update"),
+  id: idSchema.describe("The voucher position ID to update"),
   sum: z.number().optional().describe("Position amount"),
   taxRate: z.number().optional().describe("Tax rate percentage"),
   comment: z.string().optional().describe("Position comment"),
@@ -289,7 +290,7 @@ export const updateVoucherPositionSchema = {
  * Delete voucher position schema
  */
 export const deleteVoucherPositionSchema = {
-  id: z.string().describe("The voucher position ID to delete"),
+  id: idSchema.describe("The voucher position ID to delete"),
 };
 
 /**
@@ -410,7 +411,7 @@ export async function updateVoucher(params: {
   if (params.deliveryDate !== undefined) body.deliveryDate = params.deliveryDate;
   if (params.costCentreId !== undefined) body.costCentre = { id: params.costCentreId, objectName: "CostCentre" };
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Voucher>>(`/Voucher/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Voucher>>(`/Voucher/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -418,7 +419,7 @@ export async function updateVoucher(params: {
  * Delete a voucher
  */
 export async function deleteVoucher(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/Voucher/${params.id}`);
+  await sevdeskDelete(`/Voucher/${idSegment(params.id)}`);
 }
 
 /**
@@ -445,7 +446,7 @@ export async function bookVoucherPayment(params: {
     body.checkAccountTransaction = { id: params.checkAccountTransactionId, objectName: "CheckAccountTransaction" };
   }
 
-  const response = await sevdeskPut<SevdeskSingleResponse<Voucher>>(`/Voucher/${params.id}/bookAmount`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<Voucher>>(`/Voucher/${idSegment(params.id)}/bookAmount`, body);
   return extractSingleObject(response);
 }
 
@@ -453,7 +454,7 @@ export async function bookVoucherPayment(params: {
  * Enshrine (finalize) a voucher
  */
 export async function enshrineVoucher(params: { id: string }): Promise<Voucher> {
-  const response = await sevdeskPut<SevdeskSingleResponse<Voucher>>(`/Voucher/${params.id}/enshrine`, {});
+  const response = await sevdeskPut<SevdeskSingleResponse<Voucher>>(`/Voucher/${idSegment(params.id)}/enshrine`, {});
   return extractSingleObject(response);
 }
 
@@ -480,7 +481,7 @@ export async function listVoucherPositions(params: {
  * Get a single voucher position
  */
 export async function getVoucherPosition(params: { id: string }): Promise<VoucherPos> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<VoucherPos>>(`/VoucherPos/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<VoucherPos>>(`/VoucherPos/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -527,7 +528,7 @@ export async function updateVoucherPosition(params: {
   if (params.taxRate !== undefined) body.taxRate = params.taxRate;
   if (params.comment !== undefined) body.comment = params.comment;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<VoucherPos>>(`/VoucherPos/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<VoucherPos>>(`/VoucherPos/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -535,7 +536,7 @@ export async function updateVoucherPosition(params: {
  * Delete a voucher position
  */
 export async function deleteVoucherPosition(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/VoucherPos/${params.id}`);
+  await sevdeskDelete(`/VoucherPos/${idSegment(params.id)}`);
 }
 
 /**

@@ -4,6 +4,7 @@
  */
 
 import { z } from "zod";
+import { idSchema, idSegment } from "../validation.js";
 import { sevdeskFetch, sevdeskPost, sevdeskPut, sevdeskDelete, buildQueryString, SevdeskApiResponse, SevdeskSingleResponse, extractSingleObject } from "../api.js";
 import type { ContactAddress } from "../types.js";
 
@@ -24,7 +25,7 @@ export const listContactAddressesSchema = {
  * Get contact address schema
  */
 export const getContactAddressSchema = {
-  id: z.string().describe("The sevdesk contact address ID"),
+  id: idSchema.describe("The sevdesk contact address ID"),
 };
 
 /**
@@ -47,7 +48,7 @@ export const createContactAddressSchema = {
  * Update contact address schema
  */
 export const updateContactAddressSchema = {
-  id: z.string().describe("The sevdesk contact address ID to update"),
+  id: idSchema.describe("The sevdesk contact address ID to update"),
   street: z.string().optional().describe("Street address"),
   zip: z.string().optional().describe("ZIP/postal code"),
   city: z.string().optional().describe("City"),
@@ -62,7 +63,7 @@ export const updateContactAddressSchema = {
  * Delete contact address schema
  */
 export const deleteContactAddressSchema = {
-  id: z.string().describe("The sevdesk contact address ID to delete"),
+  id: idSchema.describe("The sevdesk contact address ID to delete"),
 };
 
 // ============================================================================
@@ -96,7 +97,7 @@ export async function listContactAddresses(params: {
  * Get a single contact address by ID
  */
 export async function getContactAddress(params: { id: string }): Promise<ContactAddress> {
-  const response = await sevdeskFetch<SevdeskSingleResponse<ContactAddress>>(`/ContactAddress/${params.id}`);
+  const response = await sevdeskFetch<SevdeskSingleResponse<ContactAddress>>(`/ContactAddress/${idSegment(params.id)}`);
   return extractSingleObject(response);
 }
 
@@ -162,7 +163,7 @@ export async function updateContactAddress(params: {
   if (params.name3 !== undefined) body.name3 = params.name3;
   if (params.name4 !== undefined) body.name4 = params.name4;
 
-  const response = await sevdeskPut<SevdeskSingleResponse<ContactAddress>>(`/ContactAddress/${params.id}`, body);
+  const response = await sevdeskPut<SevdeskSingleResponse<ContactAddress>>(`/ContactAddress/${idSegment(params.id)}`, body);
   return extractSingleObject(response);
 }
 
@@ -170,7 +171,7 @@ export async function updateContactAddress(params: {
  * Delete a contact address
  */
 export async function deleteContactAddress(params: { id: string }): Promise<void> {
-  await sevdeskDelete(`/ContactAddress/${params.id}`);
+  await sevdeskDelete(`/ContactAddress/${idSegment(params.id)}`);
 }
 
 // ============================================================================
