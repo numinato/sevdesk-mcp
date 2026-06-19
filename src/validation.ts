@@ -22,10 +22,12 @@ export const idSchema = z
  * that import the exported tool functions directly and so bypass the Zod layer.
  */
 export function idSegment(id: string): string {
-  if (!NUMERIC_ID.test(id)) {
-    // Serialize + truncate so a non-numeric value (only reachable by callers that
-    // bypass the Zod layer) can't reflect quotes/newlines through handleError().
-    const shown = JSON.stringify(id.length > 64 ? `${id.slice(0, 64)}…` : id);
+  if (typeof id !== "string" || !NUMERIC_ID.test(id)) {
+    // Coerce + truncate + serialize so a non-string or non-numeric value (only
+    // reachable by callers that bypass the Zod layer) can't reflect quotes,
+    // newlines, or an oversized payload through handleError().
+    const raw = String(id);
+    const shown = JSON.stringify(raw.length > 64 ? `${raw.slice(0, 64)}…` : raw);
     throw new Error(`Invalid sevDesk ID ${shown}: expected a numeric string`);
   }
   return id;

@@ -49,7 +49,9 @@ const maliciousIds = [
 
 describe('F1: every exported id schema rejects URL path manipulation', () => {
   it('discovers id fields across all tool modules', () => {
-    expect(idFields.length).toBeGreaterThanOrEqual(50)
+    // Tightened from 50: the real count is 64, so a guard of 50 would silently
+    // tolerate ~14 schemas dropping out before failing. 60 leaves only minor slack.
+    expect(idFields.length).toBeGreaterThanOrEqual(60)
   })
 
   for (const [label, schema] of idFields) {
@@ -82,6 +84,12 @@ describe('F1: idSegment runtime guard (defense in depth for direct calls)', () =
       const msg = (e as Error).message
       expect(msg).not.toContain('\n') // newline escaped by JSON.stringify
       expect(msg.length).toBeLessThan(120) // truncated, not the full 200+ chars
+    }
+  })
+  it('throws a controlled error on non-string input (runtime guard for JS callers)', () => {
+    for (const bad of [undefined, null, 123, Symbol('x'), {}]) {
+      // @ts-expect-error — exercising the runtime guard against non-string callers
+      expect(() => idSegment(bad)).toThrow()
     }
   })
 })
