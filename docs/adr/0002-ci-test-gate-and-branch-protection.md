@@ -15,9 +15,11 @@ continuous integration and no merge gate.
   `main`. The single `test` job runs `pnpm install --frozen-lockfile` →
   `pnpm build` → `pnpm test`, with a workflow-level `permissions: contents: read`
   (least-privilege `GITHUB_TOKEN`).
-- Protect `main`: require the `test` status check (strict — the branch must be up to
-  date before merge), with `enforce_admins: true` so the gate applies to the owner
-  as well (no override).
+- Protect `main` with three rules: **require a pull request before merging** (with
+  zero required approvals, so the maintainer can still self-merge); require the
+  `test` status check to pass (strict — the branch must be up to date before merge);
+  and `enforce_admins: true`, so the rules apply to the owner as well. Together these
+  block direct pushes to `main` for everyone — all changes go through a branch + PR.
 
 ## Alternatives considered
 
@@ -34,5 +36,3 @@ continuous integration and no merge gate.
 - Open follow-up (non-blocking, raised in review): SHA-pin the action tags
   (`actions/checkout@v4`, `actions/setup-node@v4`, `pnpm/action-setup@v4`) for
   supply-chain hardening.
-- GitHub currently emits a harmless "Node.js 20 deprecated" notice for the action
-  runtimes; revisit when newer action major versions ship.
