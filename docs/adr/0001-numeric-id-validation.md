@@ -6,11 +6,13 @@
 
 ## Context
 
-Every tool addresses its sevDesk object through a single `id` parameter that is
-interpolated directly into the request path, e.g. `/Voucher/${id}` or
-`/Invoice/${id}/enshrine` (`src/tools/*.ts`). Query-string parameters already pass
-through `encodeURIComponent` via `buildQueryString` (`src/api.ts`), but path
-segments did not.
+Every tool that operates on an existing sevDesk object references it by a single
+`id` that is interpolated directly into the request path, e.g. `/Voucher/${id}` or
+`/Invoice/${id}/enshrine` (`src/tools/*.ts`). (List / create / filter schemas have
+no top-level `id`.) User-controlled query-string parameters already pass through
+`encodeURIComponent` via `buildQueryString` (`src/api.ts`) — but path segments did
+not. (A handful of static `getPdf` query strings are built inline rather than via
+`buildQueryString`; they carry no user-controlled values.)
 
 IDs were typed as a free `z.string()`. A crafted value such as `5/enshrine` or
 `../Invoice/9` could therefore redirect a routine `delete`/`update` call to a
@@ -26,16 +28,22 @@ webhook, another tool's output) and passing it through verbatim.
 Constrain every sevDesk object `id` to digits (`/^\d+$/`), with a **single source of
 truth** in `src/validation.ts`:
 
-- **`idSchema`** (zod) — used by every tool input schema. This is the MCP boundary:
-  the MCP SDK validates tool arguments against the schema before the handler runs.
+- **`idSchema`** (zod) — used by every tool-input `id` field. This is the MCP
+  boundary: the MCP SDK validates tool arguments against the schema before the
+  handler runs.
 - **`idSegment(id)`** — a runtime guard that wraps every `id` interpolated into a
   request path. This is the path-construction boundary. It also rejects non-string
   input and `String()`-coerces + truncates + `JSON.stringify`-serializes the
-  offending value in its error message, so nothing untrusted is reflected back
-  through `handleError()`.
+  offending value before it goes into the error message, so any reflected input
+  reaching `handleError()` is escaped and length-bounded — no raw quotes, newlines,
+  or oversized payloads.
 
 Two layers are deliberate: the tool functions are exported and can be imported and
 called directly, bypassing Zod. `idSegment` closes that direct-call path.
+
+Scope: only the path-segment `id` is constrained. Related-entity IDs that appear in
+request *bodies* (e.g. `contactId`, `invoiceId`) intentionally remain `z.string()` —
+they never reach the URL path, so they are outside this threat model.
 
 ## Alternatives considered
 
@@ -55,7 +63,9 @@ called directly, bypassing Zod. `idSegment` closes that direct-call path.
   tool modules), verified by a repo-wide grep and by an exhaustive regression test
   that auto-discovers every exported `*Schema` with an `id` field via
   `import.meta.glob('../tools/**/*.ts')` (`src/tests/id-validation.test.ts`). A
-  count guard fails the suite if discovery silently drops schemas.
+  count guard (`>= 60`, against the current 64) fails the suite on a substantial
+  drop in discovered schemas; the small slack is deliberate so that adding or
+  removing a single tool does not break the test.
 - **Breaking change:** previously-accepted non-numeric `id` strings now raise a
   validation error. Hence the major version bump to `2.0.0`.
 - Unicode digits are intentionally rejected — `\d` is ASCII-only in JS regex.
