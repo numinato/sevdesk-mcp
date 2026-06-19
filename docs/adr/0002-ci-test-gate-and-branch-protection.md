@@ -33,6 +33,5 @@ continuous integration and no merge gate.
 
 - No pull request merges into `main` without a green `test` run. Direct pushes to
   `main` are blocked — work goes through a branch and PR (this ADR included).
-- Open follow-up (non-blocking, raised in review): SHA-pin the action tags
-  (`actions/checkout@v4`, `actions/setup-node@v4`, `pnpm/action-setup@v4`) for
-  supply-chain hardening.
+- CI action tags are SHA-pinned (immutable commit + version comment), so a moved or
+  hijacked tag cannot silently alter the workflow. Dependabot can still bump the pins.
