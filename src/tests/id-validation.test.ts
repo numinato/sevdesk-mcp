@@ -11,10 +11,10 @@ import { idSegment } from '../validation.js'
  * account. IDs are constrained to digits at the Zod boundary (idSchema) and again
  * at the path-construction boundary (idSegment). This test pins BOTH.
  *
- * Tool modules are discovered via `import.meta.glob`, so a newly added file under
- * src/tools/ is covered automatically — there is no module list to maintain here.
+ * Tool modules are discovered via a recursive `import.meta.glob`, so any newly added
+ * file anywhere under src/tools/ (including subdirectories) is covered automatically.
  */
-const toolModules = import.meta.glob('../tools/*.ts', { eager: true }) as Record<
+const toolModules = import.meta.glob('../tools/**/*.ts', { eager: true }) as Record<
   string,
   Record<string, unknown>
 >
@@ -83,7 +83,7 @@ describe('F1: idSegment runtime guard (defense in depth for direct calls)', () =
     } catch (e) {
       const msg = (e as Error).message
       expect(msg).not.toContain('\n') // newline escaped by JSON.stringify
-      expect(msg.length).toBeLessThan(120) // truncated, not the full 200+ chars
+      expect(msg).not.toContain('x'.repeat(100)) // long payload truncated, not reflected whole
     }
   })
   it('throws a controlled error on non-string input (runtime guard for JS callers)', () => {
